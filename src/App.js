@@ -3,6 +3,7 @@ import * as d3 from 'd3';
 import BarChart from './visualizations/BarChart';
 import {
   getFirstX,
+  replaceComma,
   sortByPropertyAsc,
 } from './utils/data-utils';
 import countriesData from './data/countries-general-data.csv'
@@ -15,52 +16,56 @@ function App() {
     d3.csv(countriesData,
       (country) => {
         parsedCountriesData.push({
-          agriculture: country.Agriculture,
-          arable: country['Arable (%)'],
-          area: country['Area (sq. mi.)'],
-          birthrate: country.Birthrate,
-          climate: country.Climate,
-          coastline: country['Coastline (coast/area ratio)'],
+          agriculture: +replaceComma(country.Agriculture),
+          arable: +replaceComma(country['Arable (%)']),
+          area: +country['Area (sq. mi.)'],
+          birthrate: +replaceComma(country.Birthrate),
+          climate: +replaceComma(country.Climate),
+          coastline: +replaceComma(country['Coastline (coast/area ratio)']),
           country: country.Country,
-          crops: country['Crops (%)'],
-          Deathrate: country.Deathrate,
-          gdp: country['GDP ($ per capita)'],
-          industry: country.Industry,
-          infantMortality: country['Infant mortality (per 1000 births)'],
-          literacy: country['Literacy (%)'],
-          migration: country['Net migration'],
-          other: country['Other (%)'],
-          phones: country['Phones (per 1000)'],
-          popDensity: country['Pop. Density (per sq. mi.)'],
+          crops: +replaceComma(country['Crops (%)']),
+          deathrate: +replaceComma(country.Deathrate),
+          gdp: +country['GDP ($ per capita)'],
+          industry: +replaceComma(country.Industry),
+          infantMortality: +replaceComma(country['Infant mortality (per 1000 births)']),
+          literacy: +replaceComma(country['Literacy (%)']),
+          netMigration: +replaceComma(country['Net migration']),
+          other: +replaceComma(country['Other (%)']),
+          phones: +replaceComma(country['Phones (per 1000)']),
+          popDensity: +replaceComma(country['Pop. Density (per sq. mi.)']),
           population: +country.Population,
-          region: country.Region,
-          service: country.Service,
+          region: country.Region.trim().toLowerCase(),
+          service: +replaceComma(country.Service),
         });
       }
     )
     .then(() => setCountryData(sortByPropertyAsc(parsedCountriesData, 'population')))
 
-    // Agriculture: "0,005"
-    // Arable (%): "23,46"
-    // Area (sq. mi.): "244820"
-    // Birthrate: "10,71"
-    // Climate: "3"
-    // Coastline (coast/area ratio): "5,08"
-    // Country: "United Kingdom "
-    // Crops (%): "0,21"
-    // Deathrate: "10,13"
-    // GDP ($ per capita): "27700"
-    // Industry: "0,237"
-    // Infant mortality (per 1000 births): "5,16"
-    // Literacy (%): "99,0"
-    // Net migration: "2,19"
-    // Other (%): "76,33"
-    // Phones (per 1000): "543,5"
-    // Pop. Density (per sq. mi.): "247,6"
-    // Population: "60609153"
-    // Region: "WESTERN EUROPE                     "
-    // Service: "0,758"
+    // agriculture: number "0,005"
+    // arable: number % "23,46"
+    // area: (sq. mi.) "244820"
+    // birthrate: number "10,71"
+    // climate: number "3"
+    // coastline: number (coast/area ratio) "5,08"
+    // country: string "United Kingdom "
+    // crops: number (%) "0,21"
+    // deathrate: number "10,13"
+    // gdp: number ($ per capita): "27700"
+    // industry: number "0,237"
+    // infantMortality: number (per 1000 births): "5,16"
+    // literacy: number (%) "99,0"
+    // netMigration: number "2,19"
+    // other: number (%) "76,33"
+    // phones: number (per 1000): "543,5"
+    // popDensity: number (per sq. mi.): "247,6"
+    // population: number "60609153"
+    // region: string "WESTERN EUROPE                     "
+    // service: number "0,758"
   }, []);
+
+  useEffect(() => {
+    console.log('countryData', countryData);
+  }, [countryData]);
 
 
 
@@ -68,7 +73,8 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <BarChart visData={getFirstX(countryData, 10)} width={800} height={500} dataProperty='population' />
+        <BarChart visData={getFirstX(countryData, 10)} width={800} height={300} dataProperty='population' />
+        <BarChart visData={getFirstX(countryData, 10)} width={800} height={300} dataProperty='area' />
       </header>
     </div>
   );

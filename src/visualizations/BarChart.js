@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import * as d3 from "d3";
-import { getTickLabel } from '../utils/label-utils';
+import { getTicks } from '../utils/label-utils';
 const margin = { top: 20, right: 5, bottom: 20, left: 45 };
 
 class BarChart extends Component {
@@ -27,8 +27,8 @@ class BarChart extends Component {
       .paddingOuter(.4);
 
     const [yMin, yMax] = d3.extent(visData, d => parseInt(d[dataProperty]));
-    const yTickFormat = yMax >= 1000000 ? 1000000 : 1000;
-    const yTickLabel = getTickLabel(yMax);
+    const { format: yTickFormat } = getTicks(yMax);
+    const { label: yTickLabel} = getTicks(yMax);
     const yScale = d3
       .scaleLinear()
       .domain([0, yMax])
@@ -43,7 +43,7 @@ class BarChart extends Component {
         x: xScale(d.country),
         y: height - yScale(parseInt(d[dataProperty])) - margin.bottom,
         height: yScale(d[dataProperty]),
-        fill: '#f4f4f4'
+        fill: '#999'
       };
     });
 

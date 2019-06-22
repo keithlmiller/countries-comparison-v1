@@ -7,10 +7,15 @@ import {
   sortByPropertyAsc,
 } from './utils/data-utils';
 import countriesData from './data/countries-general-data.csv'
-import './App.css';
+import './App.scss';
 
 function App() {
   const [countryData, setCountryData] = useState([]);
+  const [sortOptions, setSortOptions] = useState([]);
+  const [visData, setVisData] = useState([]);
+  const [sortProperty, setSortProperty] = useState('population');
+  const [compareProperty, setCompareProperty] = useState('area');
+
   useEffect(() => {
     let parsedCountriesData = [];
     d3.csv(countriesData,
@@ -39,7 +44,11 @@ function App() {
         });
       }
     )
-    .then(() => setCountryData(sortByPropertyAsc(parsedCountriesData, 'population')))
+    .then(() => {
+      setCountryData(parsedCountriesData);
+      setVisData(sortByPropertyAsc(parsedCountriesData, sortProperty));
+      setSortOptions(Object.keys(parsedCountriesData[0]));
+    })
 
     // agriculture: number "0,005"
     // arable: number % "23,46"
@@ -67,15 +76,56 @@ function App() {
     console.log('countryData', countryData);
   }, [countryData]);
 
+  useEffect(() => {
+    console.log('sortOptions', sortOptions);
 
+  }, [sortOptions]);
 
+  const handleSelectSort = (e) => {
+    const newSortProperty = e.target.value;
+
+    setVisData(sortByPropertyAsc(countryData, newSortProperty))
+    setSortProperty(newSortProperty);
+  }
+
+  const handleSelectCompare = (e) => {
+    console.log('e.target.value', e.target.value);
+    const newCompareProperty = e.target.value;
+
+    setCompareProperty(newCompareProperty);
+  }
 
   return (
     <div className="App">
       <header className="App-header">
-        <BarChart visData={getFirstX(countryData, 10)} width={800} height={300} dataProperty='population' />
-        <BarChart visData={getFirstX(countryData, 10)} width={800} height={300} dataProperty='area' />
+          <h2>Countries Comparison</h2>
       </header>
+      <div className='app-content'>
+        <div className='chart-options'>
+          <div className='countries-sort-list'>
+              <h4>See top countries by...</h4>
+              <select
+                value={sortProperty}
+                onChange={handleSelectSort} 
+              >
+                {sortOptions.map((property) => <option value={property}>{property}</option>)}
+              </select>
+          </div>
+          <div className='countries-compare-list'>
+              <h4>How do those countries compare in...</h4>
+              <select
+                value={compareProperty}
+                onChange={handleSelectCompare} 
+              >
+                {sortOptions.map((property) => <option value={property}>{property}</option>)}
+              </select>
+          </div>
+        </div> 
+        <div className='charts'>
+          <BarChart visData={getFirstX(visData, 10)} width={800} height={300} dataProperty={sortProperty} />
+          <BarChart visData={getFirstX(visData, 10)} width={800} height={300} dataProperty={compareProperty} />
+        </div>
+      </div> 
     </div>
   );
 }

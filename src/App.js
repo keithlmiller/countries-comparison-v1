@@ -138,6 +138,13 @@ function App() {
     setCompareProperty(newCompareProperty);
   }
 
+  const switchSortAndCompare = () => {
+    const newCompareProperty = sortProperty;
+    setSortProperty(compareProperty);
+    setCompareProperty(newCompareProperty)
+    setVisData(sortByPropertyAsc(countryData, compareProperty))
+  }
+
   return (
     <div className="App">
       <header className="App-header">
@@ -154,6 +161,7 @@ function App() {
                 {sortOptions.map((property) => <option value={property.name}>{property.displayName}</option>)}
               </select>
           </div>
+          <button onClick={switchSortAndCompare}>Switch</button>
           <div className='countries-compare-list'>
               <h4>How do those countries compare in...</h4>
               <select

@@ -18,7 +18,7 @@ class BarChart extends Component {
 
     if (!visData) return {};
 
-    const countries = visData.map(d => d.country);
+    const countries = visData.map(d => d.country.value);
     const xScale = d3
       .scaleBand()
       .domain(countries)
@@ -26,7 +26,7 @@ class BarChart extends Component {
       .paddingInner(0.75)
       .paddingOuter(.4);
 
-    const [yMin, yMax] = d3.extent(visData, d => parseInt(d[dataProperty]));
+    const [yMin, yMax] = d3.extent(visData, d => parseInt(d[dataProperty].value));
     const { format: yTickFormat } = getTicks(yMax);
     const { label: yTickLabel} = getTicks(yMax);
     const yScale = d3
@@ -40,9 +40,9 @@ class BarChart extends Component {
 
     const bars = visData.map(d => {
       return {
-        x: xScale(d.country),
-        y: height - yScale(parseInt(d[dataProperty])) - margin.bottom,
-        height: yScale(d[dataProperty]),
+        x: xScale(d.country.value),
+        y: height - yScale(parseInt(d[dataProperty].value)) - margin.bottom,
+        height: yScale(d[dataProperty].value),
         fill: '#999'
       };
     });

@@ -21,33 +21,82 @@ function App() {
     d3.csv(countriesData,
       (country) => {
         parsedCountriesData.push({
-          agriculture: +replaceComma(country.Agriculture),
-          arable: +replaceComma(country['Arable (%)']),
-          area: +country['Area (sq. mi.)'],
-          birthrate: +replaceComma(country.Birthrate),
-          climate: +replaceComma(country.Climate),
-          coastline: +replaceComma(country['Coastline (coast/area ratio)']),
-          country: country.Country,
-          crops: +replaceComma(country['Crops (%)']),
-          deathrate: +replaceComma(country.Deathrate),
-          gdp: +country['GDP ($ per capita)'],
-          industry: +replaceComma(country.Industry),
-          infantMortality: +replaceComma(country['Infant mortality (per 1000 births)']),
-          literacy: +replaceComma(country['Literacy (%)']),
-          netMigration: +replaceComma(country['Net migration']),
-          other: +replaceComma(country['Other (%)']),
-          phones: +replaceComma(country['Phones (per 1000)']),
-          popDensity: +replaceComma(country['Pop. Density (per sq. mi.)']),
-          population: +country.Population,
-          region: country.Region.trim().toLowerCase(),
-          service: +replaceComma(country.Service),
+          agriculture: { value: +replaceComma(country.Agriculture) },
+          arable: { 
+            value: +replaceComma(country['Arable (%)']),
+            displayName: 'Arable Land Percentage',
+            sortable: true,
+          },
+          area: { 
+            value: +country['Area (sq. mi.)'],
+            displayName: 'Area (sq. mi.)',
+            sortable: true,
+          },
+          birthrate: { 
+            value: +replaceComma(country.Birthrate),
+            displayName: 'Birthrate',
+            sortable: true,
+          },
+          climate: { value: +replaceComma(country.Climate) },
+          coastline: { value: +replaceComma(country['Coastline (coast/area ratio)']) },
+          country: { value: country.Country },
+          crops: { value: +replaceComma(country['Crops (%)']) },
+          deathrate: { 
+            value: +replaceComma(country.Deathrate),
+            displayName: 'Deathrate',
+            sortable: true,
+          },
+          gdp: { 
+            value: +country['GDP ($ per capita)'],
+            displayName: 'GDP ($ per capita)',
+            sortable: true,
+          },
+          industry: { value: +replaceComma(country.Industry) },
+          infantMortality: { 
+            value: +replaceComma(country['Infant mortality (per 1000 births)']),
+            displayName: 'Infant Mortality (per 1000 births)',
+            sortable: true,
+          },
+          literacy: { 
+            value: +replaceComma(country['Literacy (%)']),
+            displayName: 'Literacy Percentage',
+            sortable: true,
+          },
+          netMigration: { 
+            value: +replaceComma(country['Net migration']),
+            displayName: 'Net migration',
+            sortable: true,
+          },
+          other: { value: +replaceComma(country['Other (%)']) },
+          phones: { 
+            value: +replaceComma(country['Phones (per 1000)']),
+            displayName: 'Phones per 1000',
+            sortable: true,
+          },
+          popDensity: { 
+            value: +replaceComma(country['Pop. Density (per sq. mi.)']),
+            displayName: 'Population Density (per sq. mi.)',
+            sortable: true,
+          },
+          population: { 
+            value: +country.Population,
+            displayName: 'Population',
+            sortable: true,          
+          },
+          region: { value: country.Region.trim().toLowerCase() },
+          service: { value: +replaceComma(country.Service) },
         });
       }
     )
     .then(() => {
       setCountryData(parsedCountriesData);
       setVisData(sortByPropertyAsc(parsedCountriesData, sortProperty));
-      setSortOptions(Object.keys(parsedCountriesData[0]));
+
+      // all countries have the same properties, so we can just pick any to get the properties in a list
+      const exampleCountry = parsedCountriesData[0];
+      setSortOptions(Object.keys(exampleCountry).filter(property => {
+        return exampleCountry[property].sortable === true;
+      }).map(property => ({ name: property, displayName: exampleCountry[property].displayName })));
     })
 
     // agriculture: number "0,005"
@@ -73,13 +122,8 @@ function App() {
   }, []);
 
   useEffect(() => {
-    console.log('countryData', countryData);
-  }, [countryData]);
-
-  useEffect(() => {
-    console.log('sortOptions', sortOptions);
-
-  }, [sortOptions]);
+    console.log('visData', visData);
+  }, [visData]);
 
   const handleSelectSort = (e) => {
     const newSortProperty = e.target.value;
@@ -89,7 +133,6 @@ function App() {
   }
 
   const handleSelectCompare = (e) => {
-    console.log('e.target.value', e.target.value);
     const newCompareProperty = e.target.value;
 
     setCompareProperty(newCompareProperty);
@@ -108,7 +151,7 @@ function App() {
                 value={sortProperty}
                 onChange={handleSelectSort} 
               >
-                {sortOptions.map((property) => <option value={property}>{property}</option>)}
+                {sortOptions.map((property) => <option value={property.name}>{property.displayName}</option>)}
               </select>
           </div>
           <div className='countries-compare-list'>
@@ -117,7 +160,7 @@ function App() {
                 value={compareProperty}
                 onChange={handleSelectCompare} 
               >
-                {sortOptions.map((property) => <option value={property}>{property}</option>)}
+                {sortOptions.map((property) => <option value={property.name}>{property.displayName}</option>)}
               </select>
           </div>
         </div> 

@@ -1,0 +1,7 @@
+.country-bar {
+    cursor: pointer;
+
+    &:hover {
+        fill: rgb(89, 89, 199);
+    }
+}

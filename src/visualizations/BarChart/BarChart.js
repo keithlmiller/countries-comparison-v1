@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import * as d3 from "d3";
-import { getTicks } from '../utils/label-utils';
+import { getTicks } from '../../utils/label-utils';
+import './BarChart.scss';
 const margin = { top: 5, right: 5, bottom: 20, left: 45 };
 
 class BarChart extends Component {
@@ -70,6 +71,14 @@ class BarChart extends Component {
     d3.select(this.refs.yAxis).call(this.yAxis);
   }
 
+  onBarMouseOver = () => {
+    console.log('onBarMouseOver');
+  }
+
+  onBarMouseOut = () => {
+    console.log('onBarMouseOut');
+  }
+
   render() {
     const {
       bars,
@@ -83,7 +92,15 @@ class BarChart extends Component {
         {chartTitle && <h3 className='chart-title'>{chartTitle}</h3>}
         <svg width={width} height={height}>
           {bars.map(d => (
-            <rect x={d.x} y={d.y} width={xScale.bandwidth()} height={d.height} fill={d.fill} />
+            <rect 
+              className='country-bar'
+              x={d.x} y={d.y} 
+              width={xScale.bandwidth()} 
+              height={d.height} 
+              fill={d.fill} 
+              onMouseOver={this.onBarMouseOver}
+              onMouseOut={this.onBarMouseOut}
+            />
           ))}
           <g ref="xAxis" transform={`translate(0, ${height - margin.bottom})`} />
           <g ref="yAxis" transform={`translate(${margin.left}, 0)`} />

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import * as d3 from 'd3';
-import BarChart from './visualizations/BarChart';
+import BarChart from './visualizations/BarChart/BarChart';
 import {
   getFirstX,
   replaceComma,
@@ -158,6 +158,10 @@ function App() {
   }
 
   const getDisplayName = (data, property) => (data.length ? data[0][property].displayName : '');
+  const onDataHover = () => {
+    //placeholder
+    console.log('data hovered');
+  }
 
   const switchSortAndCompare = () => {
     const newCompareProperty = sortProperty;
@@ -201,6 +205,7 @@ function App() {
             width={800} height={300} 
             dataProperty={sortProperty} 
             chartTitle={sortDisplayName} 
+            onDataHover={onDataHover}
           />
           <BarChart 
             visData={getFirstX(visData, 10)} 

@@ -1,4 +1,4 @@
-export const getTicks = (max) => {
+export const getTicks = (max, min = max) => {
     const labels = ['B', 'M', 'k'];
     if (max >= Math.pow(10, 10)) {
         return {

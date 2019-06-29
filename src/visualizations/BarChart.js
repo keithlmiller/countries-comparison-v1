@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import * as d3 from "d3";
 import { getTicks } from '../utils/label-utils';
-const margin = { top: 20, right: 5, bottom: 20, left: 45 };
+const margin = { top: 5, right: 5, bottom: 20, left: 45 };
 
 class BarChart extends Component {
   state = {
     bars: [],
-    yTickFormat: 1000000,
+    yTickFormat: 1,
     yTickLabel: 'M',
   };
 
@@ -26,13 +26,15 @@ class BarChart extends Component {
       .paddingInner(0.75)
       .paddingOuter(.4);
 
-    const [yMin, yMax] = d3.extent(visData, d => parseInt(d[dataProperty].value));
+    const [yMin, yMax] = d3.extent(visData, d => d[dataProperty].value);
     const { format: yTickFormat } = getTicks(yMax);
     const { label: yTickLabel} = getTicks(yMax);
+
     const yScale = d3
       .scaleLinear()
       .domain([0, yMax])
       .range([0, height - margin.bottom - margin.top]);
+      
     const yAxisScale = d3
       .scaleLinear()
       .domain([0, yMax])
@@ -41,7 +43,7 @@ class BarChart extends Component {
     const bars = visData.map(d => {
       return {
         x: xScale(d.country.value),
-        y: height - yScale(parseInt(d[dataProperty].value)) - margin.bottom,
+        y: height - yScale(d[dataProperty].value) - margin.bottom,
         height: yScale(d[dataProperty].value),
         fill: '#999'
       };
@@ -74,10 +76,11 @@ class BarChart extends Component {
       xScale,
     } = this.state;
 
-    const { width, height } = this.props;
+    const { width, height, chartTitle } = this.props;
 
     return (
       <div className='chart-container primary-chart'>
+        {chartTitle && <h3 className='chart-title'>{chartTitle}</h3>}
         <svg width={width} height={height}>
           {bars.map(d => (
             <rect x={d.x} y={d.y} width={xScale.bandwidth()} height={d.height} fill={d.fill} />

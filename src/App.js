@@ -15,6 +15,8 @@ function App() {
   const [visData, setVisData] = useState([]);
   const [sortProperty, setSortProperty] = useState('population');
   const [compareProperty, setCompareProperty] = useState('area');
+  const [sortDisplayName, setSortDisplayName,] = useState('');
+  const [compareDisplayName, setCompareDisplayName] = useState('');
 
   useEffect(() => {
     let parsedCountriesData = [];
@@ -65,7 +67,7 @@ function App() {
           netMigration: { 
             value: +replaceComma(country['Net migration']),
             displayName: 'Net migration',
-            sortable: true,
+            sortable: false,
           },
           other: { value: +replaceComma(country['Other (%)']) },
           phones: { 
@@ -91,6 +93,8 @@ function App() {
     .then(() => {
       setCountryData(parsedCountriesData);
       setVisData(sortByPropertyAsc(parsedCountriesData, sortProperty));
+      setSortDisplayName(getDisplayName(parsedCountriesData, sortProperty))
+      setCompareDisplayName(getDisplayName(parsedCountriesData, compareProperty));
 
       // all countries have the same properties, so we can just pick any to get the properties in a list
       const exampleCountry = parsedCountriesData[0];
@@ -122,8 +126,23 @@ function App() {
   }, []);
 
   useEffect(() => {
-    console.log('visData', visData);
-  }, [visData]);
+    setSortDisplayName(getDisplayName(visData, sortProperty))
+  }, [visData, sortProperty])
+
+
+  useEffect(() => {
+    setCompareDisplayName(getDisplayName(visData, compareProperty))
+  }, [visData, compareProperty])
+
+  useEffect(() => {
+    const visDataProperties = visData.map(country => country[sortProperty]);
+    const visDataCompareProperties = visData.map(country => country[compareProperty]);
+
+    console.log('visDataProperties', getFirstX(visDataProperties, 10));
+    console.log('visDataCompareProperties', getFirstX(visDataCompareProperties, 10));
+
+
+  }, [visData, sortProperty, compareProperty])
 
   const handleSelectSort = (e) => {
     const newSortProperty = e.target.value;
@@ -137,6 +156,8 @@ function App() {
 
     setCompareProperty(newCompareProperty);
   }
+
+  const getDisplayName = (data, property) => (data.length ? data[0][property].displayName : '');
 
   const switchSortAndCompare = () => {
     const newCompareProperty = sortProperty;
@@ -155,16 +176,18 @@ function App() {
           <div className='countries-sort-list'>
               <h4>See top countries by...</h4>
               <select
+                className='property-select'
                 value={sortProperty}
                 onChange={handleSelectSort} 
               >
                 {sortOptions.map((property) => <option value={property.name}>{property.displayName}</option>)}
               </select>
           </div>
-          <button onClick={switchSortAndCompare}>Switch</button>
+          <button className='switch-btn' onClick={switchSortAndCompare}>Swap Chart Properties</button>
           <div className='countries-compare-list'>
               <h4>How do those countries compare in...</h4>
               <select
+                className='property-select'
                 value={compareProperty}
                 onChange={handleSelectCompare} 
               >
@@ -173,8 +196,18 @@ function App() {
           </div>
         </div> 
         <div className='charts'>
-          <BarChart visData={getFirstX(visData, 10)} width={800} height={300} dataProperty={sortProperty} />
-          <BarChart visData={getFirstX(visData, 10)} width={800} height={300} dataProperty={compareProperty} />
+          <BarChart 
+            visData={getFirstX(visData, 10)} 
+            width={800} height={300} 
+            dataProperty={sortProperty} 
+            chartTitle={sortDisplayName} 
+          />
+          <BarChart 
+            visData={getFirstX(visData, 10)} 
+            width={800} height={300} 
+            dataProperty={compareProperty} 
+            chartTitle={compareDisplayName} 
+          />
         </div>
       </div> 
     </div>

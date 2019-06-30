@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import * as d3 from "d3";
 import { getTicks } from '../../utils/label-utils';
 import './BarChart.scss';
+import Tooltip from "../../components/Tooltip/Tooltip";
 const margin = { top: 5, right: 5, bottom: 20, left: 45 };
 
 class BarChart extends Component {
@@ -9,10 +10,14 @@ class BarChart extends Component {
     bars: [],
     yTickFormat: 1,
     yTickLabel: 'M',
+    hoverX: 0,
+    hoverY: 0,
   };
 
   xAxis = d3.axisBottom();
   yAxis = d3.axisLeft();
+
+  chartContainerRef = React.createRef();
 
   static getDerivedStateFromProps(nextProps, prevState) {
     const { visData, width, height, dataProperty } = nextProps;
@@ -54,6 +59,10 @@ class BarChart extends Component {
     return { bars, xScale, yScale, yAxisScale, yTickFormat, yTickLabel };
   }
 
+  componentDidMount() {
+    this.boundingRect = this.chartContainerRef.current.getBoundingClientRect();
+  }
+
   componentDidUpdate() {
     const {
       xScale,
@@ -82,21 +91,49 @@ class BarChart extends Component {
     onCountryHover('');
   }
 
+  showTooltip = (title, value, x, y) => {
+    this.setState({
+      isTooltipOpen: true,
+      tooltipTitle: title,
+      tooltipValue: value,
+      hoverX: x,
+      hoverY: y,
+    });
+  }
+
+  positionTooltip = (x, y) => {
+    const { setTooltipPosition } = this.props;
+    const tooltipX = x - this.boundingRect.x;
+    const tooltipY = y - this.boundingRect.y;
+
+    setTooltipPosition({x: tooltipX, y: tooltipY})
+  }
+
   render() {
     const {
       bars,
       xScale,
     } = this.state;
 
-    const { width, height, chartTitle, hoveredCountry } = this.props;
+    const { 
+      width, 
+      height, 
+      chartTitle, 
+      hoveredCountry,
+      tooltipPosition, 
+      visData,
+      dataProperty,
+    } = this.props;
 
     const barWidth = xScale.bandwidth();
     const linePlacement = barWidth / 2;
 
+    const hoverCountryData = visData.find(d => d.country.value === hoveredCountry);
+
     return (
       <div className='chart-container primary-chart'>
         {chartTitle && <h3 className='chart-title'>{chartTitle}</h3>}
-        <svg width={width} height={height}>
+        <svg className='chart-svg' width={width} height={height} ref={this.chartContainerRef}>
           {bars.map(d => (
             <g>
               {hoveredCountry === d.country &&
@@ -121,7 +158,8 @@ class BarChart extends Component {
                 height={height - margin.bottom} 
                 fill={d.fill}
                 fill-opacity={0}
-                onMouseOver={() => this.onBarMouseOver(d.country)}
+                onMouseOver={(e) => this.onBarMouseOver(d.country)}
+                onMouseMove={(e) => this.positionTooltip(e.clientX, e.clientY)}
                 onMouseOut={this.onBarMouseOut}
               />
             </g>
@@ -129,6 +167,13 @@ class BarChart extends Component {
           <g ref="xAxis" transform={`translate(0, ${height - margin.bottom})`} />
           <g ref="yAxis" transform={`translate(${margin.left}, 0)`} />
         </svg>
+        {!!hoveredCountry.length && <Tooltip
+          name={hoveredCountry}
+          property={hoverCountryData[dataProperty].displayName}
+          propertyValue={hoverCountryData[dataProperty].value}
+          x={tooltipPosition.x}
+          y={tooltipPosition.y}
+        />}
       </div>
     );
   }

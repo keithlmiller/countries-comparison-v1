@@ -18,6 +18,7 @@ function App() {
   const [sortDisplayName, setSortDisplayName,] = useState('');
   const [compareDisplayName, setCompareDisplayName] = useState('');
   const [hoveredCountry, setHoveredCountry] = useState('')
+  const [tooltipPosition, setTooltipPosition] = useState({x: 0, y: 0})
 
   useEffect(() => {
     let parsedCountriesData = [];
@@ -173,7 +174,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-          <h2>Countries Comparison</h2>
+          <h2>Country Comparison</h2>
       </header>
       <div className='app-content'>
         <div className='chart-options'>
@@ -207,6 +208,8 @@ function App() {
             chartTitle={sortDisplayName} 
             onCountryHover={onCountryHover}
             hoveredCountry={hoveredCountry}
+            setTooltipPosition={setTooltipPosition}
+            tooltipPosition={tooltipPosition}
           />
           <BarChart 
             visData={getFirstX(visData, 10)} 
@@ -215,6 +218,8 @@ function App() {
             chartTitle={compareDisplayName} 
             onCountryHover={onCountryHover}
             hoveredCountry={hoveredCountry}
+            setTooltipPosition={setTooltipPosition}
+            tooltipPosition={tooltipPosition}
           />
         </div>
       </div> 

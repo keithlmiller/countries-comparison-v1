@@ -21,6 +21,9 @@
   color: #61dafb;
 }
 
+// placeholder
+$hoverColor: rgb(89, 89, 199);
+
 .app-content {
   display: flex;
   justify-content: space-around;
@@ -43,13 +46,19 @@
     max-width: 100%; 
     box-sizing: border-box;
     margin: 0;
-    border: 1px solid #aaa;
+    border-radius: 0;
+    border: none;
+    border-bottom: 2px solid #aaa;
     box-shadow: 0 1px 0 1px rgba(0,0,0,.04);
     -moz-appearance: none;
     -webkit-appearance: none;
     appearance: none;
     background-color: #fff;
     cursor: pointer; 
+
+    &:hover {
+      border-color: $hoverColor;
+    }
 }
 
 .select-css:hover {

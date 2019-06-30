@@ -145,7 +145,7 @@ class BarChart extends Component {
               }
               
               <rect 
-                className='country-bar'
+                className={`country-bar ${hoveredCountry === d.country ? 'country-bar-hovered' : ''}`}
                 x={d.x} y={d.y} 
                 width={barWidth} 
                 height={d.height} 

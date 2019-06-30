@@ -5,6 +5,7 @@ import {
   getFirstX,
   replaceComma,
   sortByPropertyAsc,
+  sortByPropertyDesc,
 } from './utils/data-utils';
 import countriesData from './data/countries-general-data.csv'
 import './App.scss';
@@ -18,7 +19,8 @@ function App() {
   const [sortDisplayName, setSortDisplayName,] = useState('');
   const [compareDisplayName, setCompareDisplayName] = useState('');
   const [hoveredCountry, setHoveredCountry] = useState('')
-  const [tooltipPosition, setTooltipPosition] = useState({x: 0, y: 0})
+  const [tooltipPosition, setTooltipPosition] = useState({x: 0, y: 0});
+  const [sortOrder, setSortOrder] = useState('asc');
 
   useEffect(() => {
     let parsedCountriesData = [];
@@ -145,10 +147,13 @@ function App() {
     console.log('visDataCompareProperties', getFirstX(visDataCompareProperties, 10));
   }, [visData, sortProperty, compareProperty])
 
+  // optional param for sortOrder, if it's not defined, use sortOrder from state
+  const getSortFunction = (newSortOrder) => (((newSortOrder || sortOrder) === 'asc') ? sortByPropertyAsc : sortByPropertyDesc);
+
   const handleSelectSort = (e) => {
     const newSortProperty = e.target.value;
 
-    setVisData(sortByPropertyAsc(countryData, newSortProperty))
+    setVisData(getSortFunction()(countryData, newSortProperty))
     setSortProperty(newSortProperty);
   }
 
@@ -156,6 +161,13 @@ function App() {
     const newCompareProperty = e.target.value;
 
     setCompareProperty(newCompareProperty);
+  }
+
+  const handleSelectSortOrder = (e) => {
+    const newSortOrder = e.target.value;
+
+    setSortOrder(newSortOrder);
+    setVisData(getSortFunction(newSortOrder)(countryData, sortProperty));
   }
 
   const getDisplayName = (data, property) => (data.length ? data[0][property].displayName : '');
@@ -168,18 +180,26 @@ function App() {
     const newCompareProperty = sortProperty;
     setSortProperty(compareProperty);
     setCompareProperty(newCompareProperty)
-    setVisData(sortByPropertyAsc(countryData, compareProperty))
+    setVisData(getSortFunction()(countryData, compareProperty))
   }
 
   return (
     <div className="App">
       <header className="App-header">
-          <h2>Country Comparison</h2>
+          <h2>Country Data Comparison</h2>
       </header>
       <div className='app-content'>
         <div className='chart-options'>
           <div className='countries-sort-list'>
-              <h4>See top countries by...</h4>
+              <h4>See countries with...</h4>
+              <select
+                className='property-select'
+                value={sortOrder}
+                onChange={handleSelectSortOrder} 
+              >
+                <option value='asc'>Highest</option>
+                <option value='desc'>Lowest</option>
+              </select>
               <select
                 className='property-select'
                 value={sortProperty}

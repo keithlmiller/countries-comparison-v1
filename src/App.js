@@ -17,6 +17,7 @@ function App() {
   const [compareProperty, setCompareProperty] = useState('area');
   const [sortDisplayName, setSortDisplayName,] = useState('');
   const [compareDisplayName, setCompareDisplayName] = useState('');
+  const [hoveredCountry, setHoveredCountry] = useState('')
 
   useEffect(() => {
     let parsedCountriesData = [];
@@ -138,10 +139,9 @@ function App() {
     const visDataProperties = visData.map(country => country[sortProperty]);
     const visDataCompareProperties = visData.map(country => country[compareProperty]);
 
+    // temp logging 
     console.log('visDataProperties', getFirstX(visDataProperties, 10));
     console.log('visDataCompareProperties', getFirstX(visDataCompareProperties, 10));
-
-
   }, [visData, sortProperty, compareProperty])
 
   const handleSelectSort = (e) => {
@@ -158,9 +158,9 @@ function App() {
   }
 
   const getDisplayName = (data, property) => (data.length ? data[0][property].displayName : '');
-  const onDataHover = () => {
-    //placeholder
-    console.log('data hovered');
+
+  const onCountryHover = (country) => {
+    setHoveredCountry(country);
   }
 
   const switchSortAndCompare = () => {
@@ -205,13 +205,16 @@ function App() {
             width={800} height={300} 
             dataProperty={sortProperty} 
             chartTitle={sortDisplayName} 
-            onDataHover={onDataHover}
+            onCountryHover={onCountryHover}
+            hoveredCountry={hoveredCountry}
           />
           <BarChart 
             visData={getFirstX(visData, 10)} 
             width={800} height={300} 
             dataProperty={compareProperty} 
             chartTitle={compareDisplayName} 
+            onCountryHover={onCountryHover}
+            hoveredCountry={hoveredCountry}
           />
         </div>
       </div> 

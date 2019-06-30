@@ -46,7 +46,8 @@ class BarChart extends Component {
         x: xScale(d.country.value),
         y: height - yScale(d[dataProperty].value) - margin.bottom,
         height: yScale(d[dataProperty].value),
-        fill: '#999'
+        fill: '#999',
+        country: d.country.value,
       };
     });
 
@@ -71,12 +72,14 @@ class BarChart extends Component {
     d3.select(this.refs.yAxis).call(this.yAxis);
   }
 
-  onBarMouseOver = () => {
-    console.log('onBarMouseOver');
+  onBarMouseOver = (country) => {
+    const { onCountryHover } = this.props;
+    onCountryHover(country);
   }
 
   onBarMouseOut = () => {
-    console.log('onBarMouseOut');
+    const { onCountryHover } = this.props;
+    onCountryHover('');
   }
 
   render() {
@@ -85,22 +88,43 @@ class BarChart extends Component {
       xScale,
     } = this.state;
 
-    const { width, height, chartTitle } = this.props;
+    const { width, height, chartTitle, hoveredCountry } = this.props;
+
+    const barWidth = xScale.bandwidth();
+    const linePlacement = barWidth / 2;
 
     return (
       <div className='chart-container primary-chart'>
         {chartTitle && <h3 className='chart-title'>{chartTitle}</h3>}
         <svg width={width} height={height}>
           {bars.map(d => (
-            <rect 
-              className='country-bar'
-              x={d.x} y={d.y} 
-              width={xScale.bandwidth()} 
-              height={d.height} 
-              fill={d.fill} 
-              onMouseOver={this.onBarMouseOver}
-              onMouseOut={this.onBarMouseOut}
-            />
+            <g>
+              {hoveredCountry === d.country &&
+                <line 
+                  x1={d.x + linePlacement} y1={margin.top} 
+                  x2={d.x + linePlacement} y2={height - margin.bottom} 
+                  stroke='#999' strokeDasharray='5,5' strokeWidth='1' 
+                />
+              }
+              
+              <rect 
+                className='country-bar'
+                x={d.x} y={d.y} 
+                width={barWidth} 
+                height={d.height} 
+                fill={d.fill} 
+              />
+              <rect 
+                className='bar-overlay'
+                x={d.x} y={margin.top} 
+                width={barWidth} 
+                height={height - margin.bottom} 
+                fill={d.fill}
+                fill-opacity={0}
+                onMouseOver={() => this.onBarMouseOver(d.country)}
+                onMouseOut={this.onBarMouseOut}
+              />
+            </g>
           ))}
           <g ref="xAxis" transform={`translate(0, ${height - margin.bottom})`} />
           <g ref="yAxis" transform={`translate(${margin.left}, 0)`} />

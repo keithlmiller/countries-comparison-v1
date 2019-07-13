@@ -7,4 +7,4 @@ export const getFirstX = (data, numberEntries) => data.slice(0, numberEntries);
 
 export const replaceComma = (string) => string.replace(/,/g, '.');
 
-export const getPropertyAvg = (data, property) => data.reduce((a, b) => a + b[property].value, 0) / data.length;
+export const getPropertyAvg = (data, property) => Math.round(data.reduce((a, b) => a + b[property].value, 0) / data.length);

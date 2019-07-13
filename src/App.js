@@ -40,7 +40,10 @@ function App() {
   const getPropertyAvgs = (data, properties) => {
     const avgCountry = properties.reduce(
       (acc, property) => {
-        acc[property] = { value: getPropertyAvg(data, property)}
+        acc[property] = {
+          value: getPropertyAvg(data, property),
+          displayName: data[0][property].displayName,
+        }
         return acc;
       }, {}
     );
@@ -220,7 +223,17 @@ function App() {
     const newCompareProperty = sortProperty;
     setSortProperty(compareProperty);
     setCompareProperty(newCompareProperty)
-    setVisData(getSortFunction()(countryData, compareProperty))
+    setVisDataWithAvg(getSortFunction()(countryData, compareProperty))
+  }
+
+  // TODO toggle world average bar in charts
+  const showWorldAverage = () => {
+    console.log('showWorldAverage');
+  }
+
+  // TODO toggle number of countries shown (all/10)
+  const showAllCountries = () => {
+    console.log('showAllCountries');
   }
 
   return (
@@ -249,6 +262,8 @@ function App() {
               </select>
           </div>
           <button className='switch-btn' onClick={switchSortAndCompare}>Swap Chart Properties</button>
+          <button className='avg-btn' onClick={showWorldAverage}>Show World Average</button>
+          <button className='all-btn' onClick={showAllCountries}>Show All Countries</button>
 
           {/* 
             TODO: add button to remove avg country bar

@@ -23,6 +23,7 @@ class BarChart extends Component {
     const { visData, width, height, dataProperty } = nextProps;
 
     if (!visData) return {};
+    console.log('visData', visData);
 
     const countries = visData.map(d => d.country.value);
     const xScale = d3
@@ -164,6 +165,16 @@ class BarChart extends Component {
               />
             </g>
           ))}
+          {/* <g>
+            <rect 
+              className={`country-bar`}
+              x={d.x} y={d.y} 
+              width={barWidth} 
+              height={d.height} 
+              fill={d.fill} 
+            />
+            avgValue
+          </g> */}
           <g ref="xAxis" transform={`translate(0, ${height - margin.bottom})`} />
           <g ref="yAxis" transform={`translate(${margin.left}, 0)`} />
         </svg>

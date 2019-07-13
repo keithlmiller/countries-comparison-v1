@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import * as d3 from 'd3';
 import BarChart from './visualizations/BarChart/BarChart';
 import {
+  getPropertyAvg,
   getFirstX,
   replaceComma,
   sortByPropertyAsc,
@@ -16,11 +17,36 @@ function App() {
   const [visData, setVisData] = useState([]);
   const [sortProperty, setSortProperty] = useState('population');
   const [compareProperty, setCompareProperty] = useState('area');
+  const [worldAvgCountry, setWorldAvgCountry] = useState({});
   const [sortDisplayName, setSortDisplayName,] = useState('');
   const [compareDisplayName, setCompareDisplayName] = useState('');
   const [hoveredCountry, setHoveredCountry] = useState('')
   const [tooltipPosition, setTooltipPosition] = useState({x: 0, y: 0});
   const [sortOrder, setSortOrder] = useState('asc');
+
+  const barsPerChart = 10;
+
+  const setVisDataWithAvg = (data, avgCountry) => {
+    const visDataWithAvg = getFirstX(data, barsPerChart);
+    const additionalCountry = avgCountry || worldAvgCountry;
+
+    if (Object.keys(additionalCountry).length) {
+      visDataWithAvg.push(additionalCountry);
+    }
+
+    setVisData(visDataWithAvg);
+  }
+
+  const getPropertyAvgs = (data, properties) => {
+    const avgCountry = properties.reduce(
+      (acc, property) => {
+        acc[property] = { value: getPropertyAvg(data, property)}
+        return acc;
+      }, {}
+    );
+    avgCountry.country = { value: 'World Average' };
+    return avgCountry;
+  }
 
   useEffect(() => {
     let parsedCountriesData = [];
@@ -96,15 +122,24 @@ function App() {
     )
     .then(() => {
       setCountryData(parsedCountriesData);
-      setVisData(sortByPropertyAsc(parsedCountriesData, sortProperty));
       setSortDisplayName(getDisplayName(parsedCountriesData, sortProperty))
       setCompareDisplayName(getDisplayName(parsedCountriesData, compareProperty));
+      
+      const sortedData = sortByPropertyAsc(parsedCountriesData, sortProperty);
+
+      console.log('parsedCountriesData', parsedCountriesData);
 
       // all countries have the same properties, so we can just pick any to get the properties in a list
       const exampleCountry = parsedCountriesData[0];
-      setSortOptions(Object.keys(exampleCountry).filter(property => {
-        return exampleCountry[property].sortable === true;
-      }).map(property => ({ name: property, displayName: exampleCountry[property].displayName })));
+      const sortableProperties = Object.keys(exampleCountry).filter(property => (exampleCountry[property].sortable === true))
+
+      console.log('sortableProperties', sortableProperties);
+      const avgCountry = getPropertyAvgs(parsedCountriesData, sortableProperties);
+
+      console.log('avgCountry', avgCountry);
+      setWorldAvgCountry(avgCountry);
+      setVisDataWithAvg(sortedData, avgCountry);
+      setSortOptions(sortableProperties.map(property => ({ name: property, displayName: exampleCountry[property].displayName })));
     })
 
     // agriculture: number "0,005"
@@ -138,36 +173,41 @@ function App() {
     setCompareDisplayName(getDisplayName(visData, compareProperty))
   }, [visData, compareProperty])
 
+  // just for logging when sort and compare property changes
   useEffect(() => {
     const visDataProperties = visData.map(country => country[sortProperty]);
     const visDataCompareProperties = visData.map(country => country[compareProperty]);
 
     // temp logging 
-    console.log('visDataProperties', getFirstX(visDataProperties, 10));
-    console.log('visDataCompareProperties', getFirstX(visDataCompareProperties, 10));
+    console.log('visDataProperties', getFirstX(visDataProperties, barsPerChart));
+    console.log('visDataCompareProperties', getFirstX(visDataCompareProperties, barsPerChart));
   }, [visData, sortProperty, compareProperty])
 
   // optional param for sortOrder, if it's not defined, use sortOrder from state
   const getSortFunction = (newSortOrder) => (((newSortOrder || sortOrder) === 'asc') ? sortByPropertyAsc : sortByPropertyDesc);
 
+  // re-sort countries based on the new property
   const handleSelectSort = (e) => {
     const newSortProperty = e.target.value;
 
-    setVisData(getSortFunction()(countryData, newSortProperty))
+    setVisDataWithAvg(getSortFunction()(countryData, newSortProperty))
     setSortProperty(newSortProperty);
   }
 
+  // no sorting done, changes which property the second chart displays
   const handleSelectCompare = (e) => {
     const newCompareProperty = e.target.value;
 
     setCompareProperty(newCompareProperty);
   }
 
+  // re-sort countries ascending vs descending
   const handleSelectSortOrder = (e) => {
     const newSortOrder = e.target.value;
 
+    console.log('handleSelectSortOrder', handleSelectSortOrder);
     setSortOrder(newSortOrder);
-    setVisData(getSortFunction(newSortOrder)(countryData, sortProperty));
+    setVisDataWithAvg(getSortFunction(newSortOrder)(countryData, sortProperty));
   }
 
   const getDisplayName = (data, property) => (data.length ? data[0][property].displayName : '');
@@ -209,6 +249,11 @@ function App() {
               </select>
           </div>
           <button className='switch-btn' onClick={switchSortAndCompare}>Swap Chart Properties</button>
+
+          {/* 
+            TODO: add button to remove avg country bar
+          */}
+
           <div className='countries-compare-list'>
               <h4>How do those countries compare in...</h4>
               <select
@@ -222,7 +267,7 @@ function App() {
         </div> 
         <div className='charts'>
           <BarChart 
-            visData={getFirstX(visData, 10)} 
+            visData={visData} 
             width={800} height={300} 
             dataProperty={sortProperty} 
             chartTitle={sortDisplayName} 
@@ -232,7 +277,7 @@ function App() {
             tooltipPosition={tooltipPosition}
           />
           <BarChart 
-            visData={getFirstX(visData, 10)} 
+            visData={visData} 
             width={800} height={300} 
             dataProperty={compareProperty} 
             chartTitle={compareDisplayName} 

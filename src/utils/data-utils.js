@@ -6,3 +6,5 @@ export const sortByPropertyDesc = (data, property) => data.sort((a, b) => a[prop
 export const getFirstX = (data, numberEntries) => data.slice(0, numberEntries);
 
 export const replaceComma = (string) => string.replace(/,/g, '.');
+
+export const getPropertyAvg = (data, property) => data.reduce((a, b) => a + b[property].value, 0) / data.length;

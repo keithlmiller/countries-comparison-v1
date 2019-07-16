@@ -23,14 +23,17 @@ function App() {
   const [hoveredCountry, setHoveredCountry] = useState('')
   const [tooltipPosition, setTooltipPosition] = useState({x: 0, y: 0});
   const [sortOrder, setSortOrder] = useState('asc');
+  const [showAllCountries, setShowAllCountries] = useState(false);
+  const [showWorldAverage, setShowWorldAverage] = useState(true);
 
   const barsPerChart = 10;
 
   const setVisDataWithAvg = (data, avgCountry) => {
-    const visDataWithAvg = getFirstX(data, barsPerChart);
+    const barsToShow = showAllCountries ? data.length : barsPerChart;
+    const visDataWithAvg = getFirstX(data, barsToShow);
     const additionalCountry = avgCountry || worldAvgCountry;
 
-    if (Object.keys(additionalCountry).length) {
+    if (Object.keys(additionalCountry).length && showWorldAverage) {
       visDataWithAvg.push(additionalCountry);
     }
 
@@ -186,6 +189,11 @@ function App() {
     console.log('visDataCompareProperties', getFirstX(visDataCompareProperties, barsPerChart));
   }, [visData, sortProperty, compareProperty])
 
+
+  useEffect(() => {
+    setVisDataWithAvg(getSortFunction()(countryData, sortProperty))
+  }, [showAllCountries, showWorldAverage])
+
   // optional param for sortOrder, if it's not defined, use sortOrder from state
   const getSortFunction = (newSortOrder) => (((newSortOrder || sortOrder) === 'asc') ? sortByPropertyAsc : sortByPropertyDesc);
 
@@ -226,14 +234,13 @@ function App() {
     setVisDataWithAvg(getSortFunction()(countryData, compareProperty))
   }
 
-  // TODO toggle world average bar in charts
-  const showWorldAverage = () => {
-    console.log('showWorldAverage');
+  const toggleShowWorldAverage = () => {
+    setShowWorldAverage(!showWorldAverage)
+    //
   }
 
-  // TODO toggle number of countries shown (all/10)
-  const showAllCountries = () => {
-    console.log('showAllCountries');
+  const toggleShowAllCountries = () => {
+    setShowAllCountries(!showAllCountries)
   }
 
   return (
@@ -262,12 +269,12 @@ function App() {
               </select>
           </div>
           <button className='switch-btn' onClick={switchSortAndCompare}>Swap Chart Properties</button>
-          <button className='avg-btn' onClick={showWorldAverage}>Show World Average</button>
-          <button className='all-btn' onClick={showAllCountries}>Show All Countries</button>
 
           {/* 
-            TODO: add button to remove avg country bar
+            TODO: make these toggle switches
           */}
+          <button className='avg-btn' onClick={toggleShowWorldAverage}>Show World Average</button>
+          <button className='all-btn' onClick={toggleShowAllCountries}>Show All Countries</button>
 
           <div className='countries-compare-list'>
               <h4>How do those countries compare in...</h4>

@@ -23,15 +23,17 @@ class BarChart extends Component {
     const { visData, width, height, dataProperty } = nextProps;
 
     if (!visData) return {};
-    console.log('visData', visData);
-
+    
+    const manyCountriesShown = visData.length > 50;
+    const paddingInner = manyCountriesShown ? 0 : 0.75;
+    const paddingOuter = manyCountriesShown ? 0 : 0.4;
     const countries = visData.map(d => d.country.value);
     const xScale = d3
       .scaleBand()
       .domain(countries)
       .range([margin.left, width - margin.right])
-      .paddingInner(0.75)
-      .paddingOuter(.4);
+      .paddingInner(paddingInner)
+      .paddingOuter(paddingOuter);
 
     const [yMin, yMax] = d3.extent(visData, d => d[dataProperty].value);
     const { format: yTickFormat } = getTicks(yMax);
@@ -165,16 +167,6 @@ class BarChart extends Component {
               />
             </g>
           ))}
-          {/* <g>
-            <rect 
-              className={`country-bar`}
-              x={d.x} y={d.y} 
-              width={barWidth} 
-              height={d.height} 
-              fill={d.fill} 
-            />
-            avgValue
-          </g> */}
           <g ref="xAxis" transform={`translate(0, ${height - margin.bottom})`} />
           <g ref="yAxis" transform={`translate(${margin.left}, 0)`} />
         </svg>

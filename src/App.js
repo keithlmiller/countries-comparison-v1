@@ -244,6 +244,8 @@ function App() {
     setShowAllCountries(!showAllCountries)
   }
 
+  const manyCountriesShown = visData.length > 50;
+
   const switchProps = {
     onColor: '#86d3ff',
     onHandleColor: '#2693e6',
@@ -257,7 +259,16 @@ function App() {
     className: 'toggle-switch',
   }
 
-  const manyCountriesShown = visData.length > 50;
+  const barChartProps = {
+    width: 800, 
+    height: 300, 
+    visData,
+    onCountryHover,
+    hoveredCountry,
+    setTooltipPosition,
+    tooltipPosition,
+    manyCountriesShown,
+  }
 
   return (
     <div className="App">
@@ -286,6 +297,17 @@ function App() {
           </div>
           <button className='switch-btn' onClick={switchSortAndCompare}>Swap Chart Properties</button>
 
+          <div className='countries-compare-list'>
+              <h4>How do those countries compare in...</h4>
+              <select
+                className='property-select'
+                value={compareProperty}
+                onChange={handleSelectCompare} 
+              >
+                {sortOptions.map((property) => <option value={property.name}>{property.displayName}</option>)}
+              </select>
+          </div>
+
           <div className='toggle-options'>
             <label className='toggle-container show-avg-toggle'>
               <span>Show World Average</span>
@@ -304,40 +326,17 @@ function App() {
               />
             </label>
           </div>
-
-          <div className='countries-compare-list'>
-              <h4>How do those countries compare in...</h4>
-              <select
-                className='property-select'
-                value={compareProperty}
-                onChange={handleSelectCompare} 
-              >
-                {sortOptions.map((property) => <option value={property.name}>{property.displayName}</option>)}
-              </select>
-          </div>
         </div> 
         <div className='charts'>
           <BarChart 
-            visData={visData} 
-            width={800} height={300} 
             dataProperty={sortProperty} 
-            chartTitle={sortDisplayName} 
-            onCountryHover={onCountryHover}
-            hoveredCountry={hoveredCountry}
-            setTooltipPosition={setTooltipPosition}
-            tooltipPosition={tooltipPosition}
-            manyCountriesShown={manyCountriesShown}
+            chartTitle={sortDisplayName}
+            {...barChartProps}
           />
           <BarChart 
-            visData={visData}
-            width={800} height={300} 
             dataProperty={compareProperty} 
             chartTitle={compareDisplayName} 
-            onCountryHover={onCountryHover}
-            hoveredCountry={hoveredCountry}
-            setTooltipPosition={setTooltipPosition}
-            tooltipPosition={tooltipPosition}
-            manyCountriesShown={manyCountriesShown}
+            {...barChartProps}
           />
         </div>
       </div> 

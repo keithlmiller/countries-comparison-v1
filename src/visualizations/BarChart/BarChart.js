@@ -20,11 +20,10 @@ class BarChart extends Component {
   chartContainerRef = React.createRef();
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    const { visData, width, height, dataProperty } = nextProps;
+    const { visData, width, height, dataProperty, manyCountriesShown } = nextProps;
 
     if (!visData) return {};
     
-    const manyCountriesShown = visData.length > 50;
     const paddingInner = manyCountriesShown ? 0 : 0.75;
     const paddingOuter = manyCountriesShown ? 0 : 0.4;
     const countries = visData.map(d => d.country.value);
@@ -73,8 +72,11 @@ class BarChart extends Component {
       yTickFormat,
       yTickLabel,
     } = this.state;
+    const { manyCountriesShown } = this.props;
+    console.log('manyCountriesShown', manyCountriesShown);
     this.xAxis
-      .scale(xScale);
+      .scale(xScale)
+      .tickFormat(d => manyCountriesShown ? '' : d )
     d3.select(this.refs.xAxis).call(this.xAxis);
     this.yAxis
       .scale(yAxisScale)

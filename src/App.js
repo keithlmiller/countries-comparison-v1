@@ -247,15 +247,17 @@ function App() {
   const switchProps = {
     onColor: '#86d3ff',
     onHandleColor: '#2693e6',
-    handleDiameter: 30,
+    handleDiameter: 20,
     uncheckedIcon: false,
     checkedIcon: false,
     boxShadow: '0px 1px 5px rgba(0, 0, 0, 0.6)',
     activeBoxShadow: '0px 0px 1px 10px rgba(0, 0, 0, 0.2)',
-    height: 20,
-    width: 48,
+    height: 15,
+    width: 32,
     className: 'toggle-switch',
   }
+
+  const manyCountriesShown = visData.length > 50;
 
   return (
     <div className="App">
@@ -324,9 +326,10 @@ function App() {
             hoveredCountry={hoveredCountry}
             setTooltipPosition={setTooltipPosition}
             tooltipPosition={tooltipPosition}
+            manyCountriesShown={manyCountriesShown}
           />
           <BarChart 
-            visData={visData} 
+            visData={visData}
             width={800} height={300} 
             dataProperty={compareProperty} 
             chartTitle={compareDisplayName} 
@@ -334,6 +337,7 @@ function App() {
             hoveredCountry={hoveredCountry}
             setTooltipPosition={setTooltipPosition}
             tooltipPosition={tooltipPosition}
+            manyCountriesShown={manyCountriesShown}
           />
         </div>
       </div> 

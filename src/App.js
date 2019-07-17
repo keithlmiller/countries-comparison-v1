@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import * as d3 from 'd3';
+import Switch from "react-switch";
 import BarChart from './visualizations/BarChart/BarChart';
 import {
   getPropertyAvg,
@@ -243,6 +244,19 @@ function App() {
     setShowAllCountries(!showAllCountries)
   }
 
+  const switchProps = {
+    onColor: '#86d3ff',
+    onHandleColor: '#2693e6',
+    handleDiameter: 30,
+    uncheckedIcon: false,
+    checkedIcon: false,
+    boxShadow: '0px 1px 5px rgba(0, 0, 0, 0.6)',
+    activeBoxShadow: '0px 0px 1px 10px rgba(0, 0, 0, 0.2)',
+    height: 20,
+    width: 48,
+    className: 'toggle-switch',
+  }
+
   return (
     <div className="App">
       <header className="App-header">
@@ -270,11 +284,24 @@ function App() {
           </div>
           <button className='switch-btn' onClick={switchSortAndCompare}>Swap Chart Properties</button>
 
-          {/* 
-            TODO: make these toggle switches
-          */}
-          <button className='avg-btn' onClick={toggleShowWorldAverage}>Show World Average</button>
-          <button className='all-btn' onClick={toggleShowAllCountries}>Show All Countries</button>
+          <div className='toggle-options'>
+            <label className='toggle-container show-avg-toggle'>
+              <span>Show World Average</span>
+              <Switch
+                checked={showWorldAverage}
+                onChange={toggleShowWorldAverage}
+                {...switchProps}
+              />
+            </label>
+            <label className='toggle-container show-avg-toggle'>
+              <span>Show All Countries</span>
+              <Switch
+                checked={showAllCountries}
+                onChange={toggleShowAllCountries}
+                {...switchProps}
+              />
+            </label>
+          </div>
 
           <div className='countries-compare-list'>
               <h4>How do those countries compare in...</h4>

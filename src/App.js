@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import * as d3 from 'd3';
 import Switch from "react-switch";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import BarChart from './visualizations/BarChart/BarChart';
 import {
   getPropertyAvg,
@@ -134,16 +135,12 @@ function App() {
       
       const sortedData = sortByPropertyAsc(parsedCountriesData, sortProperty);
 
-      console.log('parsedCountriesData', parsedCountriesData);
-
       // all countries have the same properties, so we can just pick any to get the properties in a list
       const exampleCountry = parsedCountriesData[0];
       const sortableProperties = Object.keys(exampleCountry).filter(property => (exampleCountry[property].sortable === true))
 
-      console.log('sortableProperties', sortableProperties);
       const avgCountry = getPropertyAvgs(parsedCountriesData, sortableProperties);
 
-      console.log('avgCountry', avgCountry);
       setWorldAvgCountry(avgCountry);
       setVisDataWithAvg(sortedData, avgCountry);
       setSortOptions(sortableProperties.map(property => ({ name: property, displayName: exampleCountry[property].displayName })));
@@ -217,7 +214,6 @@ function App() {
   const handleSelectSortOrder = (e) => {
     const newSortOrder = e.target.value;
 
-    console.log('handleSelectSortOrder', handleSelectSortOrder);
     setSortOrder(newSortOrder);
     setVisDataWithAvg(getSortFunction(newSortOrder)(countryData, sortProperty));
   }
@@ -277,8 +273,8 @@ function App() {
       </header>
       <div className='app-content'>
         <div className='chart-options'>
-          <div className='countries-sort-list'>
-              <h4>See countries with...</h4>
+          <div className='select-container countries-sort-list'>
+              <h4 className='select-header'>See countries with...</h4>
               <select
                 className='property-select'
                 value={sortOrder}
@@ -295,10 +291,16 @@ function App() {
                 {sortOptions.map((property) => <option value={property.name}>{property.displayName}</option>)}
               </select>
           </div>
-          <button className='switch-btn' onClick={switchSortAndCompare}>Swap Chart Properties</button>
+          
+          <button className='swap-btn' onClick={switchSortAndCompare} title='Swap properies between charts'>
+            {/* <FontAwesomeIcon icon='angle-double-up' className='swap-arrow swap-up' /> */}
+            <span>Swap</span>
+            {/* <FontAwesomeIcon icon='angle-double-up' className='swap-arrow swap-down' /> */}
+            <FontAwesomeIcon icon='exchange-alt' className='swap-arrows' />
+          </button>
 
-          <div className='countries-compare-list'>
-              <h4>How do those countries compare in...</h4>
+          <div className='select-container countries-compare-list'>
+              <h4 className='select-header'>How do those countries compare in...</h4>
               <select
                 className='property-select'
                 value={compareProperty}

@@ -53,7 +53,6 @@ class BarChart extends Component {
         x: xScale(d.country.value),
         y: height - yScale(d[dataProperty].value) - margin.bottom,
         height: yScale(d[dataProperty].value),
-        fill: '#999',
         country: d.country.value,
       };
     });
@@ -154,14 +153,13 @@ class BarChart extends Component {
                 x={d.x} y={d.y} 
                 width={barWidth} 
                 height={d.height} 
-                fill={d.fill} 
               />
               <rect 
                 className='bar-overlay'
                 x={d.x} y={margin.top} 
                 width={barWidth} 
                 height={height - margin.bottom} 
-                fill={d.fill}
+                fill='#999'
                 fill-opacity={0}
                 onMouseOver={(e) => this.onBarMouseOver(d.country)}
                 onMouseMove={(e) => this.positionTooltip(e.clientX, e.clientY)}

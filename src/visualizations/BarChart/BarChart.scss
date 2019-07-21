@@ -1,3 +1,4 @@
+$barColor: #71b1e2;
 $barHoverColor: #2693e6;
 
 .chart-container {
@@ -10,14 +11,11 @@ $barHoverColor: #2693e6;
 
     .country-bar {
         cursor: pointer;
+        fill: $barColor;
 
         &.country-bar-hovered {
             fill: $barHoverColor;
         }
-    
-        // &:hover {
-            
-        // }
     }
     
     .bar-overlay {

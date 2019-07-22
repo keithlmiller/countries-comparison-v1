@@ -297,10 +297,8 @@ function App() {
               </select>
           </div>
           
-          <button className='swap-btn' onClick={switchSortAndCompare} title='Swap properies between charts'>
-            {/* <FontAwesomeIcon icon='angle-double-up' className='swap-arrow swap-up' /> */}
+          <button className='swap-btn' onClick={switchSortAndCompare} title='Swap properties between charts'>
             <span>Swap</span>
-            {/* <FontAwesomeIcon icon='angle-double-up' className='swap-arrow swap-down' /> */}
             <FontAwesomeIcon icon='exchange-alt' className='swap-arrows' />
           </button>
 

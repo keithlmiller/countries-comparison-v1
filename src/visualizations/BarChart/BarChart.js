@@ -35,8 +35,7 @@ class BarChart extends Component {
       .paddingOuter(paddingOuter);
 
     const [yMin, yMax] = d3.extent(visData, d => d[dataProperty].value);
-    const { format: yTickFormat } = getTicks(yMax);
-    const { label: yTickLabel} = getTicks(yMax);
+    const { format: yTickFormat, label: yTickLabel } = getTicks(yMax, yMin);
 
     const yScale = d3
       .scaleLinear()
@@ -72,7 +71,6 @@ class BarChart extends Component {
       yTickLabel,
     } = this.state;
     const { manyCountriesShown } = this.props;
-    console.log('manyCountriesShown', manyCountriesShown);
     this.xAxis
       .scale(xScale)
       .tickFormat(d => manyCountriesShown ? '' : d )
@@ -80,9 +78,11 @@ class BarChart extends Component {
     this.yAxis
       .scale(yAxisScale)
       .tickFormat(
-        d => `${parseInt((d) / yTickFormat)}${yTickLabel}`
+        d => `${d / yTickFormat}${yTickLabel}`
       );
-    d3.select(this.refs.yAxis).call(this.yAxis);
+    d3.select(this.refs.yAxis)
+      .call(this.yAxis)
+      .selectAll('.tick:first-of-type').remove()
   }
 
   onBarMouseOver = (country) => {
@@ -147,13 +147,15 @@ class BarChart extends Component {
                   stroke='#999' strokeDasharray='5,5' strokeWidth='1' 
                 />
               }
+              <g ref='bars'>
+                <rect
+                  className={`country-bar ${hoveredCountry === d.country ? 'country-bar-hovered' : ''}`}
+                  x={d.x} y={d.y} 
+                  width={barWidth} 
+                  height={d.height} 
+                />
+              </g>
               
-              <rect 
-                className={`country-bar ${hoveredCountry === d.country ? 'country-bar-hovered' : ''}`}
-                x={d.x} y={d.y} 
-                width={barWidth} 
-                height={d.height} 
-              />
               <rect 
                 className='bar-overlay'
                 x={d.x} y={margin.top} 
@@ -167,8 +169,8 @@ class BarChart extends Component {
               />
             </g>
           ))}
-          <g ref="xAxis" transform={`translate(0, ${height - margin.bottom})`} />
-          <g ref="yAxis" transform={`translate(${margin.left}, 0)`} />
+          <g ref='xAxis' transform={`translate(0, ${height - margin.bottom})`} />
+          <g ref='yAxis' transform={`translate(${margin.left}, 0)`} />
         </svg>
         {!!hoveredCountry.length && <Tooltip
           name={hoveredCountry}

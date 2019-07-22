@@ -266,6 +266,11 @@ function App() {
     manyCountriesShown,
   }
 
+  const sortOrders = {
+    asc: 'Highest',
+    desc: 'Lowest',
+  }
+
   return (
     <div className="App">
       <header className="App-header">
@@ -280,8 +285,8 @@ function App() {
                 value={sortOrder}
                 onChange={handleSelectSortOrder} 
               >
-                <option value='asc'>Highest</option>
-                <option value='desc'>Lowest</option>
+                <option value='asc'>{sortOrders['asc']}</option>
+                <option value='desc'>{sortOrders['desc']}</option>
               </select>
               <select
                 className='property-select'
@@ -332,7 +337,7 @@ function App() {
         <div className='charts'>
           <BarChart 
             dataProperty={sortProperty} 
-            chartTitle={sortDisplayName}
+            chartTitle={`${sortOrders[sortOrder]} ${sortDisplayName}`}
             {...barChartProps}
           />
           <BarChart 
